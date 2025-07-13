@@ -6,15 +6,14 @@ const baseImages = [
   '/images/trbbie beast.png',
 ];
 
-function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+function generateShuffledImages() {
+  const half = Array(18).fill(baseImages[0]).concat(Array(18).fill(baseImages[1]));
+  for (let i = half.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [half[i], half[j]] = [half[j], half[i]];
+  }
+  return half;
 }
-
-const generateShuffledImages = () =>
-  shuffle([
-    ...Array(18).fill(baseImages[0]),
-    ...Array(18).fill(baseImages[1]),
-  ]);
 
 export default function BoxGrid() {
   const [shuffledImages, setShuffledImages] = useState(generateShuffledImages());
@@ -23,6 +22,10 @@ export default function BoxGrid() {
   const [playerChoices, setPlayerChoices] = useState([]);
   const [winner, setWinner] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+
+  const revealAllCards = () => {
+    setFlipped(Array(36).fill(true));
+  };
 
   const handlePlayerSelect = (player) => {
     setCurrentPlayer(player);
@@ -52,9 +55,11 @@ export default function BoxGrid() {
     if (wrongChoice) {
       setWinner(currentPlayer === 'nahida' ? 'tribbie' : 'nahida');
       setGameOver(true);
+      revealAllCards();
     } else if (correctCount === totalExpected) {
       setWinner(currentPlayer);
       setGameOver(true);
+      revealAllCards();
     }
   };
 
